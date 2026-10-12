@@ -1,0 +1,152 @@
+<header class="page-head">
+  <div class="wrap">
+    <div class="crumb"><a href="index.html">Ana sayfa</a> · Araçlar</div>
+    <h1><span data-yil></span> net–brüt maaş hesaplama</h1>
+    <p>Brütten nete veya netten brüte; 12 ayın kümülatif gelir vergisi, asgari ücret istisnası ve işveren maliyetiyle birlikte.</p>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="tool">
+      <form class="panel" id="f" novalidate>
+        <h2>Bilgiler</h2>
+        <div class="seg" role="group" aria-label="Hesaplama yönü">
+          <button type="button" id="mBrut" aria-pressed="true">Brütten nete</button>
+          <button type="button" id="mNet" aria-pressed="false">Netten brüte</button>
+        </div>
+        <div class="field">
+          <label for="tutar" id="tutarEt">Aylık brüt ücret</label>
+          <input type="text" id="tutar" inputmode="decimal" placeholder="ör. 50.000,00" autocomplete="off">
+          <div class="hint" id="tutarIp">Her ay aynı brüt ücret ödendiği varsayılır.</div>
+        </div>
+        <div class="field">
+          <label for="ay">Gösterilecek ay</label>
+          <select id="ay"></select>
+        </div>
+        <div class="field">
+          <label for="tesvik">İşveren SGK payı</label>
+          <select id="tesvik"></select>
+          <div class="hint">İşveren maliyeti hesabında kullanılır, çalışanın netini etkilemez.</div>
+        </div>
+      </form>
+
+      <section class="panel" aria-live="polite">
+        <h2 id="sonucBaslik">Sonuç</h2>
+        <div id="sonuc"><p class="muted">Tutarı girdiğinizde sonuç burada görünür.</p></div>
+      </section>
+    </div>
+
+    <div id="yillik" hidden>
+      <h2 style="margin-top:32px">12 aylık görünüm</h2>
+      <p class="muted" style="margin-top:4px">Vergi dilimi atladıkça net ücret düşer (brütten nete) veya gereken brüt artar (netten brüte).</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Ay</th><th>Brüt</th><th>SGK + İşsizlik</th><th>Gelir vergisi</th><th>Damga</th><th>Net</th><th>Küm. matrah</th><th>İşveren maliyeti</th></tr></thead>
+          <tbody id="tb"></tbody>
+          <tfoot id="tf"></tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div class="info">
+      <h2><span data-yil></span> parametreleri</h2>
+      <ul id="paramList"></ul>
+      <p class="disclaimer">Bilgilendirme amaçlıdır. Engellilik indirimi, BES kesintisi, kısmi süreli çalışma, eksik gün ve teşvik türlerine göre bordro farklılaşabilir. Parametreler: <span data-guncel></span>.</p>
+    </div>
+
+    <div class="cta">
+      <p>Bordro ve personel maliyeti planlaması için destek alın.</p>
+      <a class="btn" href="mailto:borazengin@gmail.com?subject=Bordro%20hakk%C4%B1nda">E-posta gönderin</a>
+    </div>
+  </div>
+</main>
+
+<script src="hesap.js"></script>
+<script>
+(function(){
+  var H = window.Hesap, P = H.PARAMS, $ = function(id){ return document.getElementById(id); };
+  var AYLAR = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+  var mod = 'brut';
+  document.querySelectorAll('[data-yil]').forEach(function(e){ e.textContent = P.yil; });
+  document.querySelector('[data-guncel]').textContent = P.guncelleme;
+
+  var simdi = new Date();
+  AYLAR.forEach(function(a, i){
+    var o = document.createElement('option'); o.value = i + 1; o.textContent = a + ' ' + P.yil; $('ay').appendChild(o);
+  });
+  $('ay').value = simdi.getFullYear() === P.yil ? simdi.getMonth() + 1 : 1;
+  Object.keys(P.isverenOranlari).forEach(function(k){
+    var o = document.createElement('option'); o.value = k; o.textContent = P.isverenOranlari[k].ad; $('tesvik').appendChild(o);
+  });
+  $('tesvik').value = 'imalatDisi';
+
+  // parametre listesi
+  var dl = P.dilimler.map(function(d, i){
+    var alt = i ? P.dilimler[i-1][0] : 0;
+    var n = function(x){ return x.toLocaleString('tr-TR'); };
+    return (d[0] === Infinity ? n(alt) + ' TL üzeri' : n(alt) + ' – ' + n(d[0]) + ' TL') + ': %' + Math.round(d[1]*100);
+  }).join('; ');
+  $('paramList').innerHTML =
+    '<li>Asgari ücret (brüt): ' + H.tl(P.asgariBrut) + '</li>' +
+    '<li>SGK prime esas kazanç üst sınırı: ' + H.tl(P.sgkTavan) + '</li>' +
+    '<li>İşçi payı: SGK %14 + işsizlik %1 · Damga vergisi: binde 7,59</li>' +
+    '<li>Ücret gelirleri vergi tarifesi: ' + dl + '</li>' +
+    '<li>Asgari ücrete isabet eden gelir ve damga vergisi istisna edilir; istisna kümülatif matraha göre aydan aya değişir.</li>';
+
+  function li(a, b, cls){ return '<li' + (cls ? ' class="'+cls+'"' : '') + '><span>'+a+'</span><span>'+b+'</span></li>'; }
+  function setMod(m){
+    mod = m;
+    $('mBrut').setAttribute('aria-pressed', m === 'brut'); $('mNet').setAttribute('aria-pressed', m === 'net');
+    $('tutarEt').textContent = m === 'brut' ? 'Aylık brüt ücret' : 'Hedeflenen aylık net ücret';
+    $('tutarIp').textContent = m === 'brut' ? 'Her ay aynı brüt ücret ödendiği varsayılır.' : 'Her ay aynı net ele geçmesi için gereken brüt hesaplanır.';
+    hesapla();
+  }
+  $('mBrut').onclick = function(){ setMod('brut'); };
+  $('mNet').onclick = function(){ setMod('net'); };
+
+  function hesapla(){
+    var t = H.sayi($('tutar').value);
+    if (!(t > 0)) {
+      $('sonuc').innerHTML = '<p class="muted">Tutarı girdiğinizde sonuç burada görünür.</p>'; $('yillik').hidden = true; return;
+    }
+    var oran = P.isverenOranlari[$('tesvik').value].oran;
+    var tablo = H.yillikTablo(t, mod, oran);
+    var ay = +$('ay').value, s = tablo[ay - 1];
+    $('sonucBaslik').textContent = AYLAR[ay-1] + ' ' + P.yil;
+    var html = '';
+    if (mod === 'brut' && t < P.asgariBrut) html += '<div class="note">Girilen tutar asgari ücretin (' + H.tl(P.asgariBrut) + ') altında.</div>';
+    html += mod === 'brut'
+      ? '<div class="big"><span>Net ücret</span><b>' + H.tl(s.net) + '</b></div>'
+      : '<div class="big"><span>Gereken brüt ücret</span><b>' + H.tl(s.brut) + '</b></div>';
+    html += '<ul class="lines">' +
+      li('Brüt ücret', H.tl(s.brut)) +
+      li('SGK işçi payı (%14)', '− ' + H.tl(s.sgk)) +
+      li('İşsizlik işçi payı (%1)', '− ' + H.tl(s.issizlik)) +
+      li('Gelir vergisi matrahı', H.tl(s.gvMatrah)) +
+      li('Hesaplanan gelir vergisi', H.tl(s.gvHesaplanan)) +
+      li('Asgari ücret GV istisnası', '− ' + H.tl(s.gvIstisna)) +
+      li('Ödenecek gelir vergisi', '− ' + H.tl(s.gv)) +
+      li('Damga vergisi (istisna sonrası)', '− ' + H.tl(s.dv)) +
+      li('Net ücret', H.tl(s.net), 'tot') + '</ul>';
+    html += '<div class="sub">İşveren</div><ul class="lines">' +
+      li('İşveren SGK + işsizlik', H.tl(s.isverenPrim)) +
+      li('Toplam işveren maliyeti', H.tl(s.maliyet), 'tot') + '</ul>';
+    if (s.sgkMatrah < s.brut) html += '<p class="muted" style="margin-top:8px">SGK primi tavan (' + H.tl(P.sgkTavan) + ') üzerinden hesaplandı.</p>';
+    $('sonuc').innerHTML = html;
+
+    var top = { brut:0, k:0, gv:0, dv:0, net:0, m:0 };
+    $('tb').innerHTML = tablo.map(function(r, i){
+      top.brut += r.brut; top.k += r.sgk + r.issizlik; top.gv += r.gv; top.dv += r.dv; top.net += r.net; top.m += r.maliyet;
+      var f = function(x){ return H.tl(x).replace(' TL',''); };
+      return '<tr' + (i + 1 === ay ? ' style="background:#fbf3e4"' : '') + '><td>' + AYLAR[i] + '</td><td>' + f(r.brut) + '</td><td>' + f(r.sgk + r.issizlik) +
+        '</td><td>' + f(r.gv) + '</td><td>' + f(r.dv) + '</td><td>' + f(r.net) + '</td><td>' + f(r.kumulatif) + '</td><td>' + f(r.maliyet) + '</td></tr>';
+    }).join('');
+    var g = function(x){ return H.tl(H.r2(x)).replace(' TL',''); };
+    $('tf').innerHTML = '<tr><td>Yıllık</td><td>' + g(top.brut) + '</td><td>' + g(top.k) + '</td><td>' + g(top.gv) + '</td><td>' + g(top.dv) + '</td><td>' + g(top.net) + '</td><td></td><td>' + g(top.m) + '</td></tr>';
+    $('yillik').hidden = false;
+  }
+  ['tutar','ay','tesvik'].forEach(function(id){ $(id).addEventListener('input', hesapla); $(id).addEventListener('change', hesapla); });
+  $('f').addEventListener('submit', function(e){ e.preventDefault(); });
+})();
+</script>

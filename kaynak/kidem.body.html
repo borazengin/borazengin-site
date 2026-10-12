@@ -1,0 +1,128 @@
+<header class="page-head">
+  <div class="wrap">
+    <div class="crumb"><a href="index.html">Ana sayfa</a> · Araçlar</div>
+    <h1>Kıdem ve ihbar tazminatı hesaplama</h1>
+    <p>Giriş-çıkış tarihi ve giydirilmiş brüt ücretle kıdem ve ihbar tazminatınızı, tavan ve vergi kesintileriyle birlikte hesaplayın.</p>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="tool">
+      <form class="panel" id="f" novalidate>
+        <h2>Bilgiler</h2>
+        <div class="row2">
+          <div class="field">
+            <label for="giris">İşe giriş tarihi</label>
+            <input type="date" id="giris" required>
+          </div>
+          <div class="field">
+            <label for="cikis">İşten çıkış tarihi</label>
+            <input type="date" id="cikis" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="brut">Son aylık brüt ücret</label>
+          <input type="text" id="brut" inputmode="decimal" placeholder="ör. 45.000,00" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="ek">Düzenli ek ödemeler (aylık, brüt)</label>
+          <input type="text" id="ek" inputmode="decimal" placeholder="0,00" autocomplete="off">
+          <div class="hint">Yol, yemek, düzenli prim, ikramiyenin aylık payı gibi. Ücrete eklenerek giydirilmiş ücret bulunur.</div>
+        </div>
+        <label class="check"><input type="checkbox" id="kidemHak" checked> <span>Kıdem tazminatına hak kazanıyor</span></label>
+        <label class="check"><input type="checkbox" id="ihbarHak"> <span>İhbar tazminatı ödenecek (bildirim süresi verilmeden fesih)</span></label>
+        <div class="field" id="kumAlan" hidden>
+          <label for="kum">Çıkış yılındaki birikmiş GV matrahı (ihbar hariç)</label>
+          <input type="text" id="kum" inputmode="decimal" placeholder="Boş bırakılırsa tahmin edilir" autocomplete="off">
+          <div class="hint">Bordrodaki kümülatif vergi matrahı. Boş bırakırsanız yıl başından beri aynı brütle çalışıldığı varsayılır.</div>
+        </div>
+      </form>
+
+      <section class="panel" aria-live="polite">
+        <h2>Sonuç</h2>
+        <div id="sonuc"><p class="muted">Tarihleri ve ücreti girdiğinizde sonuç burada görünür.</p></div>
+      </section>
+    </div>
+
+    <div class="info">
+      <h2>Nasıl hesaplanıyor?</h2>
+      <ul>
+        <li><b>Kıdem tazminatı:</b> her tam yıl için 30 günlük giydirilmiş brüt ücret; artan ay ve günler oranlanır. Ücret, çıkış tarihindeki kıdem tazminatı tavanını aşamaz. Yalnızca damga vergisi (binde 7,59) kesilir.</li>
+        <li><b>Hak kazanma:</b> en az 1 yıl çalışma ve 4857 sayılı Kanun'a göre tazminatı gerektiren bir fesih nedeni gerekir (işveren feshi, haklı nedenle istifa, emeklilik, askerlik, evlilik vb.).</li>
+        <li><b>İhbar süresi</b> (İş Kanunu md. 17): 6 aydan az çalışmada 2, 6 ay–1,5 yıl arası 4, 1,5–3 yıl arası 6, 3 yıldan fazlası için 8 hafta.</li>
+        <li><b>İhbar tazminatı</b> tavana tabi değildir; gelir vergisi (kümülatif matraha göre) ve damga vergisi kesilir.</li>
+      </ul>
+      <p class="disclaimer">Bilgilendirme amaçlıdır; toplu sözleşme, fazla mesai, yıllık izin ücreti gibi kalemler dahil değildir. Kesin hesap için bordro kayıtlarınızla birlikte danışın. Parametreler: <span data-guncel></span>.</p>
+    </div>
+
+    <div class="cta">
+      <p>İşten çıkış sürecinizi birlikte planlayalım.</p>
+      <a class="btn" href="mailto:borazengin@gmail.com?subject=Tazminat%20hesab%C4%B1%20hakk%C4%B1nda">E-posta gönderin</a>
+    </div>
+  </div>
+</main>
+
+<script src="hesap.js"></script>
+<script>
+(function(){
+  var H = window.Hesap, $ = function(id){ return document.getElementById(id); };
+  document.querySelector('[data-guncel]').textContent = H.PARAMS.guncelleme;
+  var bugun = new Date(); bugun.setMinutes(bugun.getMinutes() - bugun.getTimezoneOffset());
+  $('cikis').value = bugun.toISOString().slice(0,10);
+
+  function li(a, b, cls){ return '<li' + (cls ? ' class="'+cls+'"' : '') + '><span>'+a+'</span><span>'+b+'</span></li>'; }
+  function tarihStr(s){ var p = s.split('-'); return p[2]+'.'+p[1]+'.'+p[0]; }
+
+  function hesapla(){
+    $('kumAlan').hidden = !$('ihbarHak').checked;
+    var brut = H.sayi($('brut').value), ek = H.sayi($('ek').value) || 0;
+    if (!$('giris').value || !$('cikis').value || !(brut > 0)) {
+      $('sonuc').innerHTML = '<p class="muted">Tarihleri ve ücreti girdiğinizde sonuç burada görünür.</p>'; return;
+    }
+    var kumVal = $('kum').value.trim();
+    var r = H.tazminat({
+      giris: $('giris').value, cikis: $('cikis').value, brut: brut, ekOdemeler: ek,
+      kidemHakki: $('kidemHak').checked, ihbarHakki: $('ihbarHak').checked,
+      kumulatif: kumVal ? H.sayi(kumVal) : null
+    });
+    if (r.hata) { $('sonuc').innerHTML = '<div class="note">'+r.hata+'</div>'; return; }
+
+    var s = r.sure, html = '';
+    r.uyarilar.forEach(function(u){ html += '<div class="note">'+u+'</div>'; });
+    html += '<div class="big"><span>Toplam net tazminat</span><b>'+H.tl(r.toplamNet)+'</b></div>';
+    html += '<ul class="lines">' +
+      li('Çalışma süresi', s.yil+' yıl '+s.ay+' ay '+s.gun+' gün') +
+      li('Giydirilmiş brüt ücret', H.tl(r.giydirilmis)) +
+      (r.tavan ? li('Kıdem tavanı ('+tarihStr(r.tavan.bas)+' itibarıyla)', H.tl(r.tavan.tutar)) : '') +
+      '</ul>';
+
+    if ($('kidemHak').checked) {
+      html += '<div class="sub">Kıdem tazminatı</div>';
+      if (r.kidem.hak) {
+        html += '<ul class="lines">' +
+          li('Esas ücret' + (r.kidem.tavanUygulandi ? ' (tavan uygulandı)' : ''), H.tl(r.kidem.esas)) +
+          li('Brüt kıdem tazminatı', H.tl(r.kidem.brut)) +
+          li('Damga vergisi', '− ' + H.tl(r.kidem.dv)) +
+          li('Net kıdem tazminatı', H.tl(r.kidem.net), 'tot') + '</ul>';
+      } else html += '<p class="muted">Hak kazanılmadı.</p>';
+    }
+    if ($('ihbarHak').checked) {
+      html += '<div class="sub">İhbar tazminatı · '+r.ihbar.hafta+' hafta ('+r.ihbar.gun+' gün)</div>';
+      html += '<ul class="lines">' +
+        li('Brüt ihbar tazminatı', H.tl(r.ihbar.brut)) +
+        li('Gelir vergisi', '− ' + H.tl(r.ihbar.gv)) +
+        li('Damga vergisi', '− ' + H.tl(r.ihbar.dv)) +
+        li('Net ihbar tazminatı', H.tl(r.ihbar.net), 'tot') + '</ul>';
+      html += '<p class="muted" style="margin-top:6px">Birikmiş GV matrahı: '+H.tl(r.ihbar.kumulatif)+
+              (r.ihbar.kumulatifKaynak === 'tahmin' ? ' (tahmini)' : '')+'</p>';
+    }
+    $('sonuc').innerHTML = html;
+  }
+  ['giris','cikis','brut','ek','kum','kidemHak','ihbarHak'].forEach(function(id){
+    $(id).addEventListener('input', hesapla); $(id).addEventListener('change', hesapla);
+  });
+  $('f').addEventListener('submit', function(e){ e.preventDefault(); });
+  hesapla();
+})();
+</script>

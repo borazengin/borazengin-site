@@ -6,7 +6,7 @@
 <title>Bora Zengin — Serbest Muhasebeci Mali Müşavir | Kırklareli</title>
 <meta name="description" content="Kırklareli mali müşavir Bora Zengin (SMMM): vergi, SGK ve bordro danışmanlığı, muhasebe otomasyonu. Ücretsiz kıdem tazminatı, net-brüt maaş hesaplama ve vergi takvimi araçları.">
 <meta property="og:title" content="Bora Zengin — SMMM">
-<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Person", "@id": "https://www.borazengin.com/#bora", "name": "Bora Zengin", "jobTitle": "Serbest Muhasebeci Mali Müşavir", "url": "https://www.borazengin.com/", "email": "mailto:borazengin@gmail.com", "telephone": "+90 505 291 88 68", "worksFor": {"@id": "https://www.borazengin.com/#buro"}, "knowsAbout": ["Mali müşavirlik", "Vergi danışmanlığı", "SGK ve bordro", "İş hukuku hesaplamaları", "Muhasebe otomasyonu"]}, {"@type": "AccountingService", "@id": "https://www.borazengin.com/#buro", "name": "Değer Muhasebe Mali Müşavirlik", "url": "https://www.degermuhasebe.com/", "image": "https://www.borazengin.com/og-image.png", "telephone": "+90 288 212 54 44", "address": {"@type": "PostalAddress", "streetAddress": "Karakaş Mah. Cami Şerefli Sok. No: 5/1", "addressLocality": "Merkez", "addressRegion": "Kırklareli", "addressCountry": "TR"}, "areaServed": {"@type": "City", "name": "Kırklareli"}, "employee": {"@id": "https://www.borazengin.com/#bora"}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Person", "@id": "https://www.borazengin.com/#bora", "name": "Bora Zengin", "jobTitle": "Serbest Muhasebeci Mali Müşavir", "url": "https://www.borazengin.com/", "email": "mailto:borazengin@gmail.com", "worksFor": {"@id": "https://www.borazengin.com/#buro"}, "knowsAbout": ["Mali müşavirlik", "Vergi danışmanlığı", "SGK ve bordro", "İş hukuku hesaplamaları", "Muhasebe otomasyonu"]}, {"@type": "AccountingService", "@id": "https://www.borazengin.com/#buro", "name": "Değer Muhasebe Mali Müşavirlik", "url": "https://www.degermuhasebe.com/", "image": "https://www.borazengin.com/og-image.png", "address": {"@type": "PostalAddress", "streetAddress": "Karakaş Mah. Cami Şerefli Sok. No: 5/1", "addressLocality": "Merkez", "addressRegion": "Kırklareli", "addressCountry": "TR"}, "areaServed": {"@type": "City", "name": "Kırklareli"}, "employee": {"@id": "https://www.borazengin.com/#bora"}}]}</script>
 <meta property="og:description" content="Mali müşavirlik, danışmanlık ve muhasebe otomasyonu. Kırklareli.">
 <meta property="og:url" content="https://www.borazengin.com/">
 <meta property="og:locale" content="tr_TR">
@@ -219,8 +219,11 @@
   .office a:hover{color:var(--gold)}
 
   /* İletişim */
-  .contact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-  @media(max-width:860px){.contact-grid{grid-template-columns:1fr}}
+  .contact-grid{display:grid;grid-template-columns:minmax(0,520px);justify-content:center}
+  a.contact-card{display:block;text-decoration:none;color:inherit}
+  .contact-card .mail{font-weight:600;color:var(--brand);font-size:1.15rem;word-break:break-word}
+  a.contact-card:hover .mail{color:var(--gold)}
+  .contact-note{margin-top:10px;font-size:.88rem;color:var(--muted)}
   .contact-card{
     background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
     padding:28px;text-align:center;
@@ -242,15 +245,6 @@
   .tool-card .go{display:inline-block;margin-top:14px;font-weight:600;font-size:.88rem;color:var(--brand)}
   .tool-card:hover .go{color:var(--gold)}
   .tools-note{margin-top:16px;font-size:.84rem;color:var(--muted)}
-  /* sabit WhatsApp butonu */
-  .wa-float{
-    position:fixed;right:18px;bottom:18px;z-index:60;
-    width:56px;height:56px;border-radius:50%;
-    background:#25d366;display:flex;align-items:center;justify-content:center;
-    box-shadow:0 8px 24px rgba(0,0,0,.25);transition:transform .2s;
-  }
-  .wa-float:hover{transform:scale(1.07)}
-  .wa-float svg{width:30px;height:30px;fill:#fff}
   /* harita */
   .map{
     margin-top:22px;border-radius:var(--radius);overflow:hidden;
@@ -420,7 +414,7 @@
         <h3>Ortağı olduğum büro</h3>
         <p>Değer Muhasebe Mali Müşavirlik olarak Kırklareli'de muhasebe, mali danışmanlık, denetim ve AB sınır ötesi işbirliği programı danışmanlığı hizmetleri sunuyoruz.</p>
         <p style="margin-top:10px">Karakaş Mah. Cami Şerefli Sok. No: 5/1, Merkez / Kırklareli<br>
-        Büro: <a href="tel:+902882125444">0 (288) 212 54 44</a> · <a href="https://www.degermuhasebe.com" target="_blank" rel="noopener">degermuhasebe.com</a></p>
+        <a href="https://www.degermuhasebe.com" target="_blank" rel="noopener">degermuhasebe.com</a></p>
       </div>
     </div>
     <div class="map rv">
@@ -434,21 +428,12 @@
   <div class="wrap">
     <div class="sec-head rv"><span class="sec-code">HESAP 900</span><h2>İletişim</h2></div>
     <div class="contact-grid">
-      <div class="contact-card rv">
-        <div class="ic">📞</div>
-        <h3>Telefon</h3>
-        <a href="tel:+905052918868">0505 291 88 68</a>
-      </div>
-      <div class="contact-card rv">
-        <div class="ic">💬</div>
-        <h3>WhatsApp</h3>
-        <a href="https://wa.me/905052918868" target="_blank" rel="noopener">Mesaj gönder</a>
-      </div>
-      <div class="contact-card rv">
+      <a class="contact-card rv" href="mailto:borazengin@gmail.com">
         <div class="ic">✉️</div>
         <h3>E-posta</h3>
-        <a href="mailto:borazengin@gmail.com">borazengin@gmail.com</a>
-      </div>
+        <span class="mail">borazengin@gmail.com</span>
+        <p class="contact-note">Sorularınızı ve randevu taleplerinizi e-postayla iletebilirsiniz.</p>
+      </a>
     </div>
   </div>
 </section>
@@ -472,8 +457,5 @@
 </script>
 
 
-<a class="wa-float" href="https://wa.me/905052918868" target="_blank" rel="noopener" aria-label="WhatsApp ile yazın">
-  <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3C8.8 3 3 8.7 3 15.8c0 2.5.7 4.9 2 7L3 29l6.4-2c2 1.1 4.3 1.7 6.6 1.7 7.2 0 13-5.7 13-12.8S23.2 3 16 3zm0 23.4c-2.1 0-4.1-.6-5.9-1.7l-.4-.3-3.8 1.2 1.2-3.7-.3-.4a10.4 10.4 0 0 1-1.7-5.7C5.1 10 10 5.2 16 5.2s10.9 4.8 10.9 10.6S22 26.4 16 26.4zm6-7.9c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-1.9-1.8-2.2-.2-.3 0-.5.1-.7l.5-.6.3-.5c.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.7s1.2 3.2 1.4 3.4c.2.2 2.4 3.6 5.7 5 .8.3 1.4.5 1.9.7.8.2 1.5.2 2.1.1.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.2-.6-.4z"/></svg>
-</a>
 </body>
 </html>
